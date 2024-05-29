@@ -10,6 +10,10 @@
   },
   "dependencies": {
     "@ipld/dag-cbor": "^9.2.0",
+    "@polkadot/api": "^11.2.1",
+    "@polkadot/extension-dapp": "^0.47.5",
+    "@polkadot/extension-inject": "^0.47.5",
+    "@polkadot/keyring": "^12.6.2",
     "multiformats": "^13.1.0",
     "next": "14.2.3",
     "react": "^18",
