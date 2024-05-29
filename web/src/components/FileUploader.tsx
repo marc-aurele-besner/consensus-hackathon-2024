@@ -88,13 +88,15 @@ const FileUploader = () => {
         <div className="text-center mt-4">
           <p className="mb-2">Selected file: {file.name}</p>
           {file.type.startsWith("image/") && fileContent && (
-            <Image
-              src={fileContent}
-              alt="Preview"
-              width={300} // Set appropriate width
-              height={300} // Set appropriate height
-              className="max-w-full h-auto mb-4"
-            />
+            <div className="flex justify-center items-center">
+              <Image
+                src={fileContent}
+                alt="Preview"
+                width={300} // Set appropriate width
+                height={300} // Set appropriate height
+                className="mb-4"
+              />
+            </div>
           )}
           {file.type.startsWith("text/") && fileContent && (
             <pre className="bg-gray-700 text-white p-4 rounded mb-4">
