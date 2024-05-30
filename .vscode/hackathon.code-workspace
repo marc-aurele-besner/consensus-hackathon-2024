@@ -5,12 +5,16 @@
       "path": ".."
     },
     {
-      "name": "indexer",
-      "path": "../indexer"
-    },
-    {
       "name": "web",
       "path": "../web"
+    },
+    {
+      "name": "indexers",
+      "path": "../indexers"
+    },
+    {
+      "name": "Autonomys-indexer",
+      "path": "../indexers/autonomyx"
     }
   ],
   "settings": {

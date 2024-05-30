@@ -2,10 +2,10 @@
 
 export const networks = [
   {
-    name: "Polkadot",
-    rpcUrl: "wss://rpc.polkadot.io",
-    chunkSize: 1024, // 1 KB
-    explorer: "https://polkadot.subscan.io",
+    name: "Autonomys Testnet",
+    rpcUrl: "wss://rpc-0.gemini-3h.subspace.network/ws",
+    chunkSize: 256 * 1024, // 256 KB
+    explorer: "https://subspace.subscan.io",
   },
   {
     name: "Kusama",
@@ -20,9 +20,9 @@ export const networks = [
     explorer: "https://paseo.subscan.io",
   },
   {
-    name: "Autonomys Testnet",
-    rpcUrl: "wss://rpc-0.gemini-3h.subspace.network/ws",
-    chunkSize: 256 * 1024, // 256 KB
-    explorer: "https://subspace.subscan.io",
+    name: "Polkadot",
+    rpcUrl: "wss://rpc.polkadot.io",
+    chunkSize: 1024, // 1 KB
+    explorer: "https://polkadot.subscan.io",
   },
 ];
