@@ -1,12 +1,10 @@
 {
   "outDir": "src/types",
-  "specVersions": "https://v2.archive.subsquid.io/metadata/kusama",
+  "specVersions": "gemini3h.jsonl",
   "pallets": {
-    "Balances": {
-      "events": [
-        "Transfer"
-      ],
-      "calls": [],
+    "System": {
+      "events": ["Remarked"],
+      "calls": ["remark_with_event"],
       "storage": [],
       "constants": []
     }

@@ -1,11 +1,11 @@
 manifestVersion: subsquid.io/v0.1
-name: indexer
+name: fileonchain-autonomys
 version: 1
-description: Substrate squid template
-build: 
+description: File On-Chain - Autonomys Indexer
+build:
 deploy:
   addons:
-    postgres: 
+    postgres:
   processor:
     cmd:
       - sqd

@@ -1,1 +1,1 @@
-export * as balances from './balances/events'
+export * as system from './system/events'

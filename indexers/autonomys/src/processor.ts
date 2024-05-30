@@ -9,27 +9,33 @@ import {
 } from "@subsquid/substrate-processor";
 import { assertNotNull } from "@subsquid/util-internal";
 
-import { events } from "./types";
+import { calls, events } from "./types";
 
 export const processor = new SubstrateBatchProcessor()
   // Lookup archive by the network name in Subsquid registry
   // See https://docs.subsquid.io/substrate-indexing/supported-networks/
-  .setGateway("https://v2.archive.subsquid.io/network/kusama")
+  // .setGateway("https://v2.archive.subsquid.io/network/kusama")
   // Chain RPC endpoint is required on Substrate for metadata and real-time updates
   .setRpcEndpoint({
     // Set via .env for local runs or via secrets when deploying to Subsquid Cloud
     // https://docs.subsquid.io/deploy-squid/env-variables/
-    url: assertNotNull(proccess.env.RPC_ENDPOINT),
+    url: assertNotNull(process.env.RPC_ENDPOINT),
     // More RPC connection options at https://docs.subsquid.io/substrate-indexing/setup/general/#set-data-source
     rateLimit: 10,
   })
   .setBlockRange({ from: 1742790 })
   .addEvent({
-    name: [events.balances.transfer.name],
+    name: [events.system.remarked.name],
     extrinsic: true,
+  })
+  .addCall({
+    name: [calls.system.remarkWithEvent.name],
   })
   .setFields({
     event: {
+      args: true,
+    },
+    calls: {
       args: true,
     },
     extrinsic: {
