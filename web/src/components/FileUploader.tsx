@@ -1,127 +1,30 @@
 // file: web/src/components/FileUploader.tsx
 
 "use client";
-import { base32 } from "multiformats/bases/base32";
-import { CID } from "multiformats/cid";
-import { sha256 } from "multiformats/hashes/sha2";
 import Image from "next/image";
-import { ChangeEvent, DragEvent, useState } from "react";
-
-interface ChunkData {
-  cid: CID;
-  data: Uint8Array;
-  nextCid?: CID;
-}
-
-interface SelectedCidData {
-  cid: string;
-  data: string;
-  nextCid?: string;
-}
+import { useFileUploader } from "../hooks/useFileUploader";
+import { truncateFileName } from "../utils/truncateFileName";
+import ConnectWalletModal from "./ConnectWalletModal";
 
 const FileUploader = () => {
-  const [file, setFile] = useState<File | null>(null);
-  const [dragActive, setDragActive] = useState(false);
-  const [fileContent, setFileContent] = useState<string | null>(null);
-  const [cids, setCids] = useState<ChunkData[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedCidData, setSelectedCidData] =
-    useState<SelectedCidData | null>(null);
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0];
-      setFile(selectedFile);
-      readFileContent(selectedFile);
-      generateCIDs(selectedFile);
-    }
-  };
-
-  const handleDrag = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  };
-
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const selectedFile = e.dataTransfer.files[0];
-      setFile(selectedFile);
-      readFileContent(selectedFile);
-      generateCIDs(selectedFile);
-    }
-  };
-
-  const readFileContent = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        setFileContent(reader.result);
-      }
-    };
-    if (file.type.startsWith("image/")) {
-      reader.readAsDataURL(file);
-    } else if (
-      file.type.startsWith("text/") ||
-      file.type === "application/json"
-    ) {
-      reader.readAsText(file);
-    }
-  };
-
-  const handleUpload = () => {
-    if (file) {
-      console.log("Uploading file:", file);
-      // Implement actual file upload logic here
-    }
-  };
-
-  const generateCIDs = async (file: File) => {
-    const chunkSize = 256 * 1024; // 256 KB
-    const chunks: ArrayBuffer[] = [];
-    const buffer = await file.arrayBuffer();
-
-    for (let i = 0; i < buffer.byteLength; i += chunkSize) {
-      chunks.push(buffer.slice(i, i + chunkSize));
-    }
-
-    const cidDataArray: ChunkData[] = await Promise.all(
-      chunks.map(async (chunk, index) => {
-        const hash = await sha256.digest(new Uint8Array(chunk));
-        const cid = CID.create(1, 0x12, hash);
-        const nextCid =
-          index + 1 < chunks.length
-            ? CID.create(
-                1,
-                0x12,
-                await sha256.digest(new Uint8Array(chunks[index + 1]))
-              )
-            : undefined;
-        return { cid, data: new Uint8Array(chunk), nextCid };
-      })
-    );
-
-    setCids(cidDataArray);
-  };
-
-  const handleCidClick = (
-    cid: CID,
-    data: Uint8Array,
-    nextCid: CID | undefined
-  ) => {
-    setSelectedCidData({
-      cid: cid.toString(base32),
-      data: JSON.stringify(new TextDecoder().decode(data)),
-      nextCid: nextCid ? nextCid.toString(base32) : undefined,
-    });
-  };
+  const {
+    file,
+    dragActive,
+    fileContent,
+    cids,
+    isOpen,
+    selectedCidData,
+    isWalletModalOpen,
+    error,
+    handleFileChange,
+    handleDrag,
+    handleDrop,
+    handleUpload,
+    handleConnect,
+    handleCidClick,
+    setIsOpen,
+    setIsWalletModalOpen,
+  } = useFileUploader();
 
   const renderFileSnippet = () => {
     if (fileContent) {
@@ -167,15 +70,6 @@ const FileUploader = () => {
     return null;
   };
 
-  const truncateFileName = (name: string, maxLength: number) => {
-    if (name.length <= maxLength) return name;
-    const extIndex = name.lastIndexOf(".");
-    const ext = extIndex !== -1 ? name.slice(extIndex) : "";
-    const truncatedName =
-      name.slice(0, maxLength - ext.length - 3) + "..." + ext;
-    return truncatedName;
-  };
-
   return (
     <div
       className={`flex flex-col items-center gap-4 border-2 border-dashed p-6 rounded-md ${
@@ -213,6 +107,9 @@ const FileUploader = () => {
           >
             Upload
           </button>
+          {error && (
+            <p className="bg-red-500 text-white p-2 rounded mb-4">{error}</p>
+          )}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-800 mb-4"
@@ -233,7 +130,7 @@ const FileUploader = () => {
                       handleCidClick(item.cid, item.data, item.nextCid)
                     }
                   >
-                    Chunk {index + 1}: {item.cid.toString(base32)}
+                    Chunk {index + 1}: {item.cid.toString()}
                   </li>
                 ))}
               </ul>
@@ -251,6 +148,11 @@ const FileUploader = () => {
           )}
         </div>
       )}
+      <ConnectWalletModal
+        isOpen={isWalletModalOpen}
+        onClose={() => setIsWalletModalOpen(false)}
+        onConnect={handleConnect}
+      />
     </div>
   );
 };
