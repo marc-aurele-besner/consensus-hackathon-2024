@@ -3,16 +3,18 @@ import { Store, TypeormDatabase } from "@subsquid/typeorm-store";
 import assert from "assert";
 import { In } from "typeorm";
 
-import { CID } from "./model";
-import { processor, ProcessorContext } from "./processor";
+import { CID, Chunk } from "./model";
+import { ProcessorContext, processor } from "./processor";
 import { calls, events } from "./types";
 
 processor.run(new TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
   let remarkEvents: RemarkEvent[] = getRemarkEvents(ctx);
+  let chunks: Chunk[] = getRemarkCalls(ctx);
 
   let cids: Map<string, CID> = await createCIDs(ctx, remarkEvents);
 
   await ctx.store.upsert([...cids.values()]);
+  await ctx.store.insert(chunks);
 });
 
 interface RemarkEvent {
@@ -24,16 +26,32 @@ interface RemarkEvent {
   hash: string;
 }
 
-function getRemarkEvents(ctx: ProcessorContext<Store>): RemarkEvent[] {
+function getRemarkCalls(ctx: ProcessorContext<Store>): Chunk[] {
   // Filters and decodes the arriving events
-  let remarkEvents: RemarkEvent[] = [];
+  let chunks: Chunk[] = [];
+
   for (let block of ctx.blocks) {
     for (let call of block.calls) {
       if (call.name == calls.system.remarkWithEvent.name) {
         let { remark } = calls.system.remarkWithEvent.v0.decode(call);
         console.log("remark:", remark);
+        try {
+          let chunk: Chunk = JSON.parse(remark);
+          chunks.push(chunk);
+        } catch (e) {
+          console.error("Failed to parse remark:", e);
+        }
       }
     }
+  }
+  return chunks;
+}
+
+function getRemarkEvents(ctx: ProcessorContext<Store>): RemarkEvent[] {
+  // Filters and decodes the arriving events
+  let remarkEvents: RemarkEvent[] = [];
+
+  for (let block of ctx.blocks) {
     for (let event of block.events) {
       if (event.name == events.system.remarked.name) {
         let rec: { sender: string; hash: string };

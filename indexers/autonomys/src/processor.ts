@@ -19,11 +19,11 @@ export const processor = new SubstrateBatchProcessor()
   .setRpcEndpoint({
     // Set via .env for local runs or via secrets when deploying to Subsquid Cloud
     // https://docs.subsquid.io/deploy-squid/env-variables/
-    url: assertNotNull(process.env.RPC_ENDPOINT),
+    url: assertNotNull(process.env.RPC_AUTONOMYS_ENDPOINT),
     // More RPC connection options at https://docs.subsquid.io/substrate-indexing/setup/general/#set-data-source
     rateLimit: 10,
   })
-  .setBlockRange({ from: 1742790 })
+  .setBlockRange({ from: 1742750 })
   .addEvent({
     name: [events.system.remarked.name],
     extrinsic: true,

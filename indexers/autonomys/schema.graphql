@@ -6,3 +6,19 @@ type CID @entity {
   timestamp: DateTime! @index
   nextCid: String @index
 }
+
+type Chunk @entity {
+  id: ID!
+  cid: String! @index
+  data: String!
+  nextCid: String
+}
+
+type RewardEvent @entity {
+  id: ID!
+  blockNumber: Int! @index
+  timestamp: DateTime! @index
+  extrinsicHash: String! @index
+  sender: String! @index
+  hash: String! @index
+}
