@@ -1,7 +1,8 @@
 // file: web/src/hooks/useFileUploader.ts
 
 import { CID } from "multiformats/cid";
-import { ChangeEvent, DragEvent, useState } from "react";
+import { ChangeEvent, DragEvent, useEffect, useState } from "react";
+import { networks } from "../constants/networks";
 import { ChunkData, generateCIDs } from "../utils/generateCIDs";
 import { readFileContent } from "../utils/readFileContent";
 import { uploadChunks } from "../utils/uploadChunks";
@@ -17,7 +18,17 @@ export const useFileUploader = () => {
   const [api, setApi] = useState<any | null>(null);
   const [account, setAccount] = useState<any | null>(null);
   const [network, setNetwork] = useState<any>(null);
+  const [chunkSize, setChunkSize] = useState<number>(256 * 1024); // Default to 256 KB
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (network) {
+      setChunkSize(network.chunkSize);
+      if (file) {
+        generateCIDs(file, network.chunkSize).then(setCids);
+      }
+    }
+  }, [network, file]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -26,6 +37,8 @@ export const useFileUploader = () => {
       readFileContent(selectedFile, setFileContent);
       if (network) {
         generateCIDs(selectedFile, network.chunkSize).then(setCids);
+      } else {
+        generateCIDs(selectedFile, chunkSize).then(setCids);
       }
     }
   };
@@ -50,19 +63,24 @@ export const useFileUploader = () => {
       readFileContent(selectedFile, setFileContent);
       if (network) {
         generateCIDs(selectedFile, network.chunkSize).then(setCids);
+      } else {
+        generateCIDs(selectedFile, chunkSize).then(setCids);
       }
     }
   };
 
   const handleUpload = () => {
-    setIsWalletModalOpen(true);
+    if (api && account) {
+      uploadChunks(api, account, cids, setError);
+    } else {
+      setIsWalletModalOpen(true);
+    }
   };
 
   const handleConnect = async (api: any, account: any, network: any) => {
     setApi(api);
     setAccount(account);
     setNetwork(network);
-    await uploadChunks(api, account, cids, setError);
   };
 
   const handleCidClick = (
@@ -82,6 +100,7 @@ export const useFileUploader = () => {
     dragActive,
     fileContent,
     cids,
+    chunkSize,
     isOpen,
     selectedCidData,
     isWalletModalOpen,
