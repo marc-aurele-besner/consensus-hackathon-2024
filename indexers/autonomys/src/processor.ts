@@ -30,6 +30,7 @@ export const processor = new SubstrateBatchProcessor()
   })
   .addCall({
     name: [calls.system.remarkWithEvent.name],
+    extrinsic: true,
   })
   .setFields({
     event: {
