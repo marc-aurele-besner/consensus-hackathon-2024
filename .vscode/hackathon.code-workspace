@@ -15,6 +15,18 @@
     {
       "name": "Autonomys-indexer",
       "path": "../indexers/autonomys"
+    },
+    {
+      "name": "Kusama-indexer",
+      "path": "../indexers/kasuma"
+    },
+    {
+      "name": "Paseo-indexer",
+      "path": "../indexers/paseo"
+    },
+    {
+      "name": "Polkadot-indexer",
+      "path": "../indexers/polkadot"
     }
   ],
   "settings": {
