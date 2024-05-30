@@ -5,7 +5,7 @@ import { In } from "typeorm";
 
 import { CID } from "./model";
 import { processor, ProcessorContext } from "./processor";
-import { events } from "./types";
+import { calls, events } from "./types";
 
 processor.run(new TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
   let remarkEvents: RemarkEvent[] = getRemarkEvents(ctx);
@@ -28,11 +28,18 @@ function getRemarkEvents(ctx: ProcessorContext<Store>): RemarkEvent[] {
   // Filters and decodes the arriving events
   let remarkEvents: RemarkEvent[] = [];
   for (let block of ctx.blocks) {
+    for (let call of block.calls) {
+      if (call.name == calls.system.remarkWithEvent.name) {
+        let { remark } = calls.system.remarkWithEvent.v0.decode(call);
+        console.log("remark:", remark);
+      }
+    }
     for (let event of block.events) {
       if (event.name == events.system.remarked.name) {
         let rec: { sender: string; hash: string };
         if (events.system.remarked.v0.is(event)) {
           let { sender, hash } = events.system.remarked.v0.decode(event);
+          console.log("sender:", sender, "hash:", hash);
           rec = { sender, hash };
         } else {
           throw new Error("Unsupported spec");
