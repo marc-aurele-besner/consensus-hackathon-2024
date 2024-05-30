@@ -7,12 +7,26 @@ import { sha256 } from "multiformats/hashes/sha2";
 import Image from "next/image";
 import { ChangeEvent, DragEvent, useState } from "react";
 
+interface ChunkData {
+  cid: CID;
+  data: Uint8Array;
+  nextCid?: CID;
+}
+
+interface SelectedCidData {
+  cid: string;
+  data: string;
+  nextCid?: string;
+}
+
 const FileUploader = () => {
   const [file, setFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [fileContent, setFileContent] = useState<string | null>(null);
-  const [cids, setCids] = useState<CID[]>([]);
+  const [cids, setCids] = useState<ChunkData[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedCidData, setSelectedCidData] =
+    useState<SelectedCidData | null>(null);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -71,21 +85,42 @@ const FileUploader = () => {
 
   const generateCIDs = async (file: File) => {
     const chunkSize = 256 * 1024; // 256 KB
-    const chunks = [];
+    const chunks: ArrayBuffer[] = [];
     const buffer = await file.arrayBuffer();
 
     for (let i = 0; i < buffer.byteLength; i += chunkSize) {
       chunks.push(buffer.slice(i, i + chunkSize));
     }
 
-    const cids = await Promise.all(
-      chunks.map(async (chunk) => {
+    const cidDataArray: ChunkData[] = await Promise.all(
+      chunks.map(async (chunk, index) => {
         const hash = await sha256.digest(new Uint8Array(chunk));
-        return CID.create(1, 0x12, hash);
+        const cid = CID.create(1, 0x12, hash);
+        const nextCid =
+          index + 1 < chunks.length
+            ? CID.create(
+                1,
+                0x12,
+                await sha256.digest(new Uint8Array(chunks[index + 1]))
+              )
+            : undefined;
+        return { cid, data: new Uint8Array(chunk), nextCid };
       })
     );
 
-    setCids(cids);
+    setCids(cidDataArray);
+  };
+
+  const handleCidClick = (
+    cid: CID,
+    data: Uint8Array,
+    nextCid: CID | undefined
+  ) => {
+    setSelectedCidData({
+      cid: cid.toString(base32),
+      data: JSON.stringify(new TextDecoder().decode(data)),
+      nextCid: nextCid ? nextCid.toString(base32) : undefined,
+    });
   };
 
   const renderFileSnippet = () => {
@@ -185,17 +220,33 @@ const FileUploader = () => {
             {isOpen ? "Hide" : "Show"} Multi-DAG Structure
           </button>
           {isOpen && (
-            <div className="mt-4 w-full max-w-md bg-gray-800 text-white p-4 rounded mx-auto">
+            <div className="mt-4 w-full max-w-2xl bg-gray-800 text-white p-4 rounded mx-auto">
               <h3 className="text-lg font-semibold mb-2">
                 Multi-DAG Structure
               </h3>
               <ul className="list-disc list-inside">
-                {cids.map((cid, index) => (
-                  <li key={index} className="break-words">
-                    Chunk {index + 1}: {cid.toString(base32)}
+                {cids.map((item, index) => (
+                  <li
+                    key={index}
+                    className="break-words cursor-pointer hover:underline"
+                    onClick={() =>
+                      handleCidClick(item.cid, item.data, item.nextCid)
+                    }
+                  >
+                    Chunk {index + 1}: {item.cid.toString(base32)}
                   </li>
                 ))}
               </ul>
+              {selectedCidData && (
+                <div className="mt-4 bg-gray-700 text-white p-4 rounded break-words">
+                  <h4 className="text-md font-semibold mb-2">CID Data</h4>
+                  <pre
+                    style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}
+                  >
+                    {JSON.stringify(selectedCidData, null, 2)}
+                  </pre>
+                </div>
+              )}
             </div>
           )}
         </div>
