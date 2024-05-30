@@ -106,7 +106,7 @@ const FileUploader = () => {
 
   return (
     <div
-      className={`flex flex-col items-center gap-4 border-2 border-dashed p-6 rounded-md ${
+      className={`flex flex-col items-center gap-4 border-2 border-dashed p-12 rounded-md ${
         dragActive ? "border-blue-500" : "border-gray-600"
       }`}
       onDragEnter={handleDrag}

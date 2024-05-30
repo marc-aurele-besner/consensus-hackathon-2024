@@ -15,10 +15,12 @@
     "@polkadot/extension-dapp": "^0.47.5",
     "@polkadot/extension-inject": "^0.47.5",
     "@polkadot/keyring": "^12.6.2",
+    "add": "^2.0.6",
     "multiformats": "^13.1.0",
     "next": "14.2.3",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-icons": "^5.2.1"
   },
   "devDependencies": {
     "@types/node": "^20",
