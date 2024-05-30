@@ -29,13 +29,13 @@ export const useFileUploader = () => {
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [txHash, setTxHash] = useState<string | null>(null);
+  const [explorer, setExplorer] = useState<string | null>(null);
 
   useEffect(() => {
     if (network) {
       setChunkSize(network.chunkSize);
-      if (file) {
-        generateCIDs(file, network.chunkSize).then(setCids);
-      }
+      setExplorer(network.explorer);
+      if (file) generateCIDs(file, network.chunkSize).then(setCids);
     }
   }, [network, file]);
 
@@ -130,6 +130,7 @@ export const useFileUploader = () => {
     isWalletModalOpen,
     isUploading,
     txHash,
+    explorer,
     error,
     handleFileChange,
     handleDrag,

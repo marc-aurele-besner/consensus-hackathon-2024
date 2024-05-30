@@ -21,6 +21,7 @@ const FileUploader = () => {
     isWalletModalOpen,
     isUploading,
     txHash,
+    explorer,
     error,
     handleFileChange,
     handleDrag,
@@ -82,8 +83,10 @@ const FileUploader = () => {
     return (
       <>
         {txHash && (
-          <p className="bg-green-500 text-white p-2 rounded mb-4">
-            Transaction hash: {txHash}
+          <p className="bg-green-500 text-white p-2 rounded mb-4 cursor-pointer">
+            <a href={`${explorer}/extrinsic/${txHash}`} target="_blank">
+              Transaction hash: {txHash}
+            </a>
           </p>
         )}
         <br />
@@ -99,7 +102,7 @@ const FileUploader = () => {
         )}
       </>
     );
-  }, [txHash, isUploading, handleUpload]);
+  }, [txHash, explorer, isUploading, handleUpload]);
 
   return (
     <div
@@ -139,12 +142,6 @@ const FileUploader = () => {
           >
             {selectedAccount ? selectedAccount.address : "Connect Wallet"}
           </button>
-          {txHash && (
-            <p className="bg-green-500 text-white p-2 rounded mb-4">
-              Transaction hash: {txHash}
-            </p>
-          )}
-          <br />
           {uploadSection}
           <br />
           <button

@@ -44,6 +44,8 @@ export const uploadChunks = async (
             setError(dispatchError.toString());
           }
         } else if (status.isInBlock) {
+          setIsUploading(false);
+          setTxHash(txHash.toHex());
           console.log("Included at block hash", status.asInBlock.toHex());
           console.log(
             "Events:",
