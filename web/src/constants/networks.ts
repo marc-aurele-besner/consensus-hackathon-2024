@@ -12,6 +12,11 @@ export const networks = [
     chunkSize: 2048, // 2 KB
   },
   {
+    name: "Paseo",
+    rpcUrl: "wss://paseo.api.integritee.network",
+    chunkSize: 1024, // 1 KB
+  },
+  {
     name: "Autonomys Testnet",
     rpcUrl: "wss://rpc-0.gemini-3h.subspace.network/ws",
     chunkSize: 256 * 1024, // 256 KB

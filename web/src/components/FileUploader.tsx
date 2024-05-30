@@ -3,6 +3,7 @@
 "use client";
 
 import Image from "next/image";
+import { useMemo } from "react";
 import { useFileUploader } from "../hooks/useFileUploader";
 import useWallet from "../hooks/useWallet";
 import { truncateFileName } from "../utils/truncateFileName";
@@ -18,6 +19,8 @@ const FileUploader = () => {
     isOpen,
     selectedCidData,
     isWalletModalOpen,
+    isUploading,
+    txHash,
     error,
     handleFileChange,
     handleDrag,
@@ -75,6 +78,29 @@ const FileUploader = () => {
     return null;
   };
 
+  const uploadSection = useMemo(() => {
+    return (
+      <>
+        {txHash && (
+          <p className="bg-green-500 text-white p-2 rounded mb-4">
+            Transaction hash: {txHash}
+          </p>
+        )}
+        <br />
+        {isUploading ? (
+          <p>Uploading to blockchain...</p>
+        ) : (
+          <button
+            onClick={handleUpload}
+            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 mb-4"
+          >
+            Upload to Blockchain
+          </button>
+        )}
+      </>
+    );
+  }, [txHash, isUploading, handleUpload]);
+
   return (
     <div
       className={`flex flex-col items-center gap-4 border-2 border-dashed p-6 rounded-md ${
@@ -113,13 +139,13 @@ const FileUploader = () => {
           >
             {selectedAccount ? selectedAccount.address : "Connect Wallet"}
           </button>
+          {txHash && (
+            <p className="bg-green-500 text-white p-2 rounded mb-4">
+              Transaction hash: {txHash}
+            </p>
+          )}
           <br />
-          <button
-            onClick={handleUpload}
-            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 mb-4"
-          >
-            Upload to Blockchain
-          </button>
+          {uploadSection}
           <br />
           <button
             onClick={() => setIsOpen(!isOpen)}

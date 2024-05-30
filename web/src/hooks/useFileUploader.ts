@@ -2,7 +2,13 @@
 
 "use client";
 import { CID } from "multiformats/cid";
-import { ChangeEvent, DragEvent, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  DragEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { networks } from "../constants/networks";
 import { ChunkData, generateCIDs } from "../utils/generateCIDs";
 import { readFileContent } from "../utils/readFileContent";
@@ -21,6 +27,8 @@ export const useFileUploader = () => {
   const [network, setNetwork] = useState<any>(null);
   const [chunkSize, setChunkSize] = useState<number>(256 * 1024); // Default to 256 KB
   const [error, setError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [txHash, setTxHash] = useState<string | null>(null);
 
   useEffect(() => {
     if (network) {
@@ -31,20 +39,23 @@ export const useFileUploader = () => {
     }
   }, [network, file]);
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0];
-      setFile(selectedFile);
-      readFileContent(selectedFile, setFileContent);
-      if (network) {
-        generateCIDs(selectedFile, network.chunkSize).then(setCids);
-      } else {
-        generateCIDs(selectedFile, chunkSize).then(setCids);
+  const handleFileChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files[0]) {
+        const selectedFile = e.target.files[0];
+        setFile(selectedFile);
+        readFileContent(selectedFile, setFileContent);
+        if (network) {
+          generateCIDs(selectedFile, network.chunkSize).then(setCids);
+        } else {
+          generateCIDs(selectedFile, chunkSize).then(setCids);
+        }
       }
-    }
-  };
+    },
+    [network, chunkSize]
+  );
 
-  const handleDrag = (e: DragEvent<HTMLDivElement>) => {
+  const handleDrag = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
@@ -52,49 +63,61 @@ export const useFileUploader = () => {
     } else if (e.type === "dragleave") {
       setDragActive(false);
     }
-  };
+  }, []);
 
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const selectedFile = e.dataTransfer.files[0];
-      setFile(selectedFile);
-      readFileContent(selectedFile, setFileContent);
-      if (network) {
-        generateCIDs(selectedFile, network.chunkSize).then(setCids);
-      } else {
-        generateCIDs(selectedFile, chunkSize).then(setCids);
+  const handleDrop = useCallback(
+    (e: DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(false);
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        const selectedFile = e.dataTransfer.files[0];
+        setFile(selectedFile);
+        readFileContent(selectedFile, setFileContent);
+        if (network) {
+          generateCIDs(selectedFile, network.chunkSize).then(setCids);
+        } else {
+          generateCIDs(selectedFile, chunkSize).then(setCids);
+        }
       }
-    }
-  };
+    },
+    [network, chunkSize]
+  );
 
-  const handleUpload = () => {
+  const handleUpload = useCallback(async () => {
     if (api && account) {
-      uploadChunks(api, account, cids, setError);
+      await uploadChunks(
+        api,
+        account,
+        cids,
+        setError,
+        setIsUploading,
+        setTxHash
+      );
     } else {
       setIsWalletModalOpen(true);
     }
-  };
+  }, [api, account, cids]);
 
-  const handleConnect = async (api: any, account: any, network: any) => {
-    setApi(api);
-    setAccount(account);
-    setNetwork(network);
-  };
+  const handleConnect = useCallback(
+    async (api: any, account: any, network: any) => {
+      setApi(api);
+      setAccount(account);
+      setNetwork(network);
+    },
+    []
+  );
 
-  const handleCidClick = (
-    cid: CID,
-    data: Uint8Array,
-    nextCid: CID | undefined
-  ) => {
-    setSelectedCidData({
-      cid: cid.toString(),
-      data: JSON.stringify(new TextDecoder().decode(data)),
-      nextCid: nextCid ? nextCid.toString() : undefined,
-    });
-  };
+  const handleCidClick = useCallback(
+    (cid: CID, data: Uint8Array, nextCid: CID | undefined) => {
+      setSelectedCidData({
+        cid: cid.toString(),
+        data: JSON.stringify(new TextDecoder().decode(data)),
+        nextCid: nextCid ? nextCid.toString() : undefined,
+      });
+    },
+    []
+  );
 
   return {
     file,
@@ -105,6 +128,8 @@ export const useFileUploader = () => {
     isOpen,
     selectedCidData,
     isWalletModalOpen,
+    isUploading,
+    txHash,
     error,
     handleFileChange,
     handleDrag,
