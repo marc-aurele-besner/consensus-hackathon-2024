@@ -14,7 +14,7 @@
     },
     {
       "name": "Autonomys-indexer",
-      "path": "../indexers/autonomyx"
+      "path": "../indexers/autonomys"
     }
   ],
   "settings": {
