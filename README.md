@@ -7,7 +7,7 @@ The demo of this project is available at [https://consensus-hackathon-2024.verce
 This project consists of two main components:
 
 1. A Next.js web application located in the `web` directory.
-2. A SubSquid indexer located in the `indexer` directory.
+2. A set of SubSquid indexers located in the `indexers` directory. (One for each supported network)
 
 ## Table of Contents
 
@@ -48,14 +48,23 @@ This project consists of two main components:
 
 ### SubSquid Indexer
 
-1. Navigate to the `indexer` directory:
-   `cd indexer`
+1. Navigate to the `indexers` directory:
+   `cd indexers/<network>`
 
 2. Copy the example environment file and modify it as needed:
    `cp .env.sample .env`
 
-3. Start the SubSquid indexer using Docker:
-   `docker-compose up -d`
+3. Install the required dependencies:
+   `npm ci`
+
+4. Start the SubSquid Docker:
+   `sqd up`
+
+5. Start the indexing process:
+   `sqd process`
+
+6. Start the graphql endpoint/playground:
+   `sqd serve`
 
    The indexer should now be running.
 
