@@ -1,0 +1,8 @@
+type CID @entity {
+  "Account address"
+  id: ID!
+  cid: String! @index
+  data: String!
+  timestamp: DateTime! @index
+  nextCid: String @index
+}
