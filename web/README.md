@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# File On-chain
 
-## Getting Started
+This project consists of two main components:
 
-First, run the development server:
+1. A Next.js web application located in the `web` directory.
+2. A SubSquid indexer located in the `indexer` directory.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Table of Contents
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- [File On-chain](#file-on-chain)
+  - [Table of Contents](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+  - [Setup Instructions](#setup-instructions)
+    - [Web Application](#web-application)
+    - [SubSquid Indexer](#subsquid-indexer)
+  - [Usage](#usage)
+    - [Web Application](#web-application-1)
+    - [SubSquid Indexer](#subsquid-indexer-1)
+  - [Project Structure](#project-structure)
+  - [License](#license)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- Node.js (>= 14.x)
+- Yarn or npm
+- Docker (for the SubSquid indexer)
 
-## Learn More
+## Setup Instructions
 
-To learn more about Next.js, take a look at the following resources:
+### Web Application
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Navigate to the `web` directory:
+   `cd web`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+2. Install dependencies:
+   `yarn install`
 
-## Deploy on Vercel
+3. Create a `.env` file in the `web` directory and add the required environment variables. Use the provided `.env.sample` as a reference.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. Start the development server:
+   `yarn dev`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+   The web application should now be running at [http://localhost:3000](http://localhost:3000).
+
+### SubSquid Indexer
+
+1. Navigate to the `indexer` directory:
+   `cd indexer`
+
+2. Copy the example environment file and modify it as needed:
+   `cp .env.sample .env`
+
+3. Start the SubSquid indexer using Docker:
+   `docker-compose up -d`
+
+   The indexer should now be running.
+
+## Usage
+
+### Web Application
+
+- Visit [http://localhost:3000](http://localhost:3000) to access the file upload interface.
+- Follow the on-screen instructions to upload a file to the Polkadot network.
+- You can choose different networks (Polkadot, Kusama, Autonomys Testnet, Polkadot Testnet) and the file will be chunked and uploaded accordingly.
+
+### SubSquid Indexer
+
+- The SubSquid indexer is designed to index data from the Polkadot network.
+- Ensure that the Docker containers are running correctly by checking the logs:
+  `docker-compose logs -f`
+
+## Project Structure
+
+.
+├── web
+│ ├── components
+│ │ ├── ConnectWalletModal.tsx
+│ │ ├── FileUploader.tsx
+│ │ └── ...
+│ ├── constants
+│ │ └── networks.ts
+│ ├── hooks
+│ │ ├── useFileUploader.ts
+│ │ └── useWallet.ts
+│ ├── pages
+│ │ ├── index.tsx
+│ │ └── ...
+│ ├── public
+│ │ ├── logo.png
+│ │ └── ...
+│ ├── styles
+│ │ └── globals.css
+│ ├── utils
+│ │ ├── truncateFileName.ts
+│ │ └── ...
+│ ├── .env.sample
+│ └── ...
+└── indexer
+├── docker-compose.yml
+├── .env.sample
+└── ...
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
