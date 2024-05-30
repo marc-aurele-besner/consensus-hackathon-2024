@@ -1,30 +1,41 @@
 // file: web/src/utils/uploadChunks.ts
 
 import { ApiPromise } from "@polkadot/api";
-import { SubmittableResult } from "@polkadot/api/submittable";
+import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ChunkData } from "./generateCIDs";
 
 export const uploadChunks = async (
   api: ApiPromise,
   account: any,
   cids: ChunkData[],
-  setError: (error: string | null) => void
+  setError: (error: string) => void
 ) => {
   try {
-    const chunkTxs = cids.map((chunk) =>
-      api.tx.system.remarkWithEvent(chunk.data)
+    const chunkTxs: SubmittableExtrinsic<"promise">[] = cids.map((chunk) =>
+      api.tx.system.remarkWithEvent(JSON.stringify(chunk))
     );
 
     const batchTx = api.tx.utility.batch(chunkTxs);
 
-    const unsub = await batchTx.signAndSend(
-      account.address,
-      ({ status, events }: SubmittableResult) => {
-        if (status.isInBlock) {
-          console.log("Transaction included at blockHash", status.asInBlock);
+    await batchTx.signAndSend(
+      account,
+      { nonce: -1 },
+      ({ status, events, dispatchError }) => {
+        if (dispatchError) {
+          if (dispatchError.isModule) {
+            const decoded = api.registry.findMetaError(dispatchError.asModule);
+            const { name, section } = decoded;
+            console.log(`${section}.${name}`);
+            setError(`${section}.${name}`);
+          } else {
+            console.log(dispatchError.toString());
+            setError(dispatchError.toString());
+          }
+        } else if (status.isInBlock) {
+          console.log("Included at block hash", status.asInBlock.toHex());
         } else if (status.isFinalized) {
-          console.log("Transaction finalized at blockHash", status.asFinalized);
-          unsub();
+          console.log("Finalized block hash", status.asFinalized.toHex());
+          setError("");
         }
       }
     );

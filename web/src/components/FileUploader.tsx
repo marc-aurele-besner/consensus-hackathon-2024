@@ -109,6 +109,14 @@ const FileUploader = () => {
           >
             Connect Wallet
           </button>
+          <br />
+          <button
+            onClick={handleUpload}
+            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 mb-4"
+          >
+            Upload to Blockchain
+          </button>
+          <br />
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-800 mb-4"
@@ -145,15 +153,6 @@ const FileUploader = () => {
               )}
             </div>
           )}
-          {error && (
-            <p className="bg-red-500 text-white p-2 rounded mb-4">{error}</p>
-          )}
-          <button
-            onClick={handleUpload}
-            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
-          >
-            Upload to Blockchain
-          </button>
         </div>
       )}
       <ConnectWalletModal
