@@ -1,5 +1,6 @@
 // file: web/src/hooks/useFileUploader.ts
 
+"use client";
 import { CID } from "multiformats/cid";
 import { ChangeEvent, DragEvent, useEffect, useState } from "react";
 import { networks } from "../constants/networks";

@@ -1,8 +1,10 @@
 // file: web/src/components/FileUploader.tsx
 
 "use client";
+
 import Image from "next/image";
 import { useFileUploader } from "../hooks/useFileUploader";
+import useWallet from "../hooks/useWallet";
 import { truncateFileName } from "../utils/truncateFileName";
 import ConnectWalletModal from "./ConnectWalletModal";
 
@@ -26,6 +28,8 @@ const FileUploader = () => {
     setIsOpen,
     setIsWalletModalOpen,
   } = useFileUploader();
+
+  const { selectedAccount } = useWallet();
 
   const renderFileSnippet = () => {
     if (fileContent) {
@@ -104,10 +108,10 @@ const FileUploader = () => {
           <p className="mb-2">Chunk size: {chunkSize / 1024} KB</p>
           {renderFileSnippet()}
           <button
-            onClick={handleUpload}
+            onClick={() => setIsWalletModalOpen(true)}
             className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 mb-4"
           >
-            Connect Wallet
+            {selectedAccount ? selectedAccount.address : "Connect Wallet"}
           </button>
           <br />
           <button
@@ -123,6 +127,9 @@ const FileUploader = () => {
           >
             {isOpen ? "Hide" : "Show"} Multi-DAG Structure
           </button>
+          {error && (
+            <p className="bg-red-500 text-white p-2 rounded mb-4">{error}</p>
+          )}
           {isOpen && (
             <div className="mt-4 w-full max-w-2xl bg-gray-800 text-white p-4 rounded mx-auto">
               <h3 className="text-lg font-semibold mb-2">

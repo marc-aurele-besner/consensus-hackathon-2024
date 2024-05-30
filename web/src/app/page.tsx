@@ -1,5 +1,7 @@
 // file: web/src/app/page.tsx
 
+"use client";
+
 import Image from "next/image";
 import FileUploader from "../components/FileUploader";
 

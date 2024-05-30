@@ -1,5 +1,7 @@
 // file: web/src/utils/uploadChunks.ts
 
+"use client";
+
 import { ApiPromise } from "@polkadot/api";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ChunkData } from "./generateCIDs";
