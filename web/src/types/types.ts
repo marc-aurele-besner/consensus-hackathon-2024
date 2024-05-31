@@ -11,7 +11,9 @@ export interface Account {
 }
 
 export interface Network {
+  id: string;
   name: string;
   rpcUrl: string;
   chunkSize: number;
+  explorer: string;
 }
