@@ -25,6 +25,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
     // const collectionResponse = await client.query(collectionQuery);
 
     const object = {
+      network: data.network,
       cid: cid.cid,
       hash: data.hash,
       blockNumber: data.blockNumber,
