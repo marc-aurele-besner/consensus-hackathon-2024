@@ -16,6 +16,7 @@
     "@polkadot/extension-inject": "^0.47.5",
     "@polkadot/keyring": "^12.6.2",
     "add": "^2.0.6",
+    "fauna": "^2.0.1",
     "multiformats": "^13.1.0",
     "next": "14.2.3",
     "react": "^18",
