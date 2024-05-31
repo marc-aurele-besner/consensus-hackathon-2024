@@ -2,6 +2,7 @@
 
 "use client";
 
+import { Network } from "@/types/types";
 import { ApiPromise } from "@polkadot/api";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { useState } from "react";
@@ -11,6 +12,7 @@ export const uploadChunks = async (
   api: ApiPromise,
   account: any,
   cids: ChunkData[],
+  network: Network,
   setError: (error: string) => void,
   setIsUploading: (isUploading: boolean) => void,
   setTxHash: (hash: string) => void
@@ -18,7 +20,7 @@ export const uploadChunks = async (
   try {
     const cidList = cids.map((chunk) => ({
       cid: chunk.cid.toString(),
-      nextCid: chunk.nextCid,
+      nextCid: chunk.nextCid ? chunk.nextCid.toString() : undefined,
     }));
     const chunkTxs: SubmittableExtrinsic<"promise">[] = cids.map((chunk) =>
       api.tx.system.remarkWithEvent(
@@ -62,7 +64,12 @@ export const uploadChunks = async (
           console.log("hash", hash);
           fetch("/api/upload-fallback", {
             method: "POST",
-            body: JSON.stringify({ cidList, hash, blockNumber }),
+            body: JSON.stringify({
+              network: network.id,
+              cidList,
+              hash,
+              blockNumber,
+            }),
             headers: {
               "Content-Type": "application/json",
             },

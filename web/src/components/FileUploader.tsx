@@ -137,7 +137,7 @@ const FileUploader = () => {
           </p>
           <p className="mb-2">Chunk size: {chunkSize / 1024} KB</p>
           {renderFileSnippet()}
-          {fileFound && (
+          {(fileFound || txHash) && (
             <>
               <a
                 href={`/api/cid/${cids[0].cid.toString()}`}

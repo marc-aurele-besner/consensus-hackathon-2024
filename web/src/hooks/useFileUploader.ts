@@ -9,7 +9,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { networks } from "../constants/networks";
+import type { Network } from "../types/types";
 import { ChunkData, generateCIDs } from "../utils/generateCIDs";
 import { readFileContent } from "../utils/readFileContent";
 import { uploadChunks } from "../utils/uploadChunks";
@@ -24,7 +24,7 @@ export const useFileUploader = () => {
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const [api, setApi] = useState<any | null>(null);
   const [account, setAccount] = useState<any | null>(null);
-  const [network, setNetwork] = useState<any>(null);
+  const [network, setNetwork] = useState<Network | null>(null);
   const [chunkSize, setChunkSize] = useState<number>(256 * 1024); // Default to 256 KB
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -98,11 +98,12 @@ export const useFileUploader = () => {
   );
 
   const handleUpload = useCallback(async () => {
-    if (api && account) {
+    if (api && account && network) {
       await uploadChunks(
         api,
         account,
         cids,
+        network,
         setError,
         setIsUploading,
         setTxHash
@@ -110,7 +111,7 @@ export const useFileUploader = () => {
     } else {
       setIsWalletModalOpen(true);
     }
-  }, [api, account, cids]);
+  }, [api, account, network, cids]);
 
   const handleConnect = useCallback(
     async (api: any, account: any, network: any) => {
