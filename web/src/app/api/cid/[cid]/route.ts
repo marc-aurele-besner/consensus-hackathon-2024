@@ -1,5 +1,6 @@
 // file: web/src/app/api/cid/[cid]/route.ts
 
+import { networks } from "@/constants/networks";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Vec } from "@polkadot/types";
 import { EventRecord } from "@polkadot/types/interfaces";
@@ -26,6 +27,7 @@ export const GET = async (
   });
 
   type Document = {
+    network: string;
     cid: string;
     hash: string;
     blockNumber: string;
@@ -63,10 +65,13 @@ export const GET = async (
 
       let blockToCheck = blockNumber;
 
-      // Connect to Subspace RPC
-      const provider = new WsProvider(
-        "wss://rpc-0.gemini-3h.subspace.network/ws"
+      const network = networks.find(
+        (network) => network.id === document.network
       );
+      if (!network) throw new Error("Network not found");
+
+      // Connect to Subspace RPC
+      const provider = new WsProvider(network.rpcUrl);
       const api = await ApiPromise.create({ provider });
 
       let found = false;
