@@ -30,6 +30,7 @@ export const useFileUploader = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [txHash, setTxHash] = useState<string | null>(null);
   const [explorer, setExplorer] = useState<string | null>(null);
+  const [fileFound, setFileFound] = useState(false);
 
   useEffect(() => {
     if (network) {
@@ -38,6 +39,18 @@ export const useFileUploader = () => {
       if (file) generateCIDs(file, network.chunkSize).then(setCids);
     }
   }, [network, file]);
+
+  const handleSearch = useCallback(async (cids: ChunkData[]) => {
+    if (cids.length > 0) {
+      const search = await fetch(`/api/search-file/${cids[0].cid.toString()}`);
+      const { found } = await search.json();
+      setFileFound(found);
+    }
+  }, []);
+
+  useEffect(() => {
+    handleSearch(cids);
+  }, [cids, handleSearch]);
 
   const handleFileChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -132,6 +145,7 @@ export const useFileUploader = () => {
     txHash,
     explorer,
     error,
+    fileFound,
     handleFileChange,
     handleDrag,
     handleDrop,

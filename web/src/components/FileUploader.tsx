@@ -21,6 +21,7 @@ const FileUploader = () => {
     isWalletModalOpen,
     isUploading,
     txHash,
+    fileFound,
     explorer,
     error,
     handleFileChange,
@@ -136,6 +137,18 @@ const FileUploader = () => {
           </p>
           <p className="mb-2">Chunk size: {chunkSize / 1024} KB</p>
           {renderFileSnippet()}
+          {fileFound && (
+            <>
+              <a
+                href={`/api/cid/${cids[0].cid.toString()}`}
+                target="_blank"
+                className="bg-blue-500 text-white p-2 rounded mb-4 inline-block"
+              >
+                View file
+              </a>
+              <br />
+            </>
+          )}
           <button
             onClick={() => setIsWalletModalOpen(true)}
             className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 mb-4"
