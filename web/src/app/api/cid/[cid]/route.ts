@@ -38,6 +38,7 @@ export const GET = async (
     try {
       const query = fql`
       chunk.where(.cid == ${cid}) {
+        network,
         cid,
         hash,
         blockNumber,
