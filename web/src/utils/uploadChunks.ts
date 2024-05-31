@@ -16,6 +16,10 @@ export const uploadChunks = async (
   setTxHash: (hash: string) => void
 ) => {
   try {
+    const cidList = cids.map((chunk) => ({
+      cid: chunk.cid.toString(),
+      nextCid: chunk.nextCid,
+    }));
     const chunkTxs: SubmittableExtrinsic<"promise">[] = cids.map((chunk) =>
       api.tx.system.remarkWithEvent(
         JSON.stringify({
@@ -27,6 +31,8 @@ export const uploadChunks = async (
     );
 
     const batchTx = api.tx.utility.batch(chunkTxs);
+
+    const blockNumber = await api.query.system.number();
 
     await batchTx.signAndSend(
       account.address,
@@ -52,7 +58,15 @@ export const uploadChunks = async (
             events,
             events.map(({ event }) => event.toHuman())
           );
-          console.log("hash", txHash.toHex());
+          const hash = txHash.toHex();
+          console.log("hash", hash);
+          fetch("/api/upload-fallback", {
+            method: "POST",
+            body: JSON.stringify({ cidList, hash, blockNumber }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
         } else if (status.isFinalized) {
           setIsUploading(false);
           console.log("Finalized block hash", status.asFinalized.toHex());
