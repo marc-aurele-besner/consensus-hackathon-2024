@@ -4,6 +4,13 @@ import { Network } from "../types/types";
 
 export const networks: Network[] = [
   {
+    id: "localhost",
+    name: "Autonomys Localhost",
+    rpcUrl: "ws://localhost:9944",
+    chunkSize: 256 * 1024, // 256 KB
+    explorer: "https://subspace.subscan.io",
+  },
+  {
     id: "autonomys",
     name: "Autonomys Testnet",
     rpcUrl: "wss://rpc-0.gemini-3h.subspace.network/ws",
