@@ -4,7 +4,7 @@
   "pallets": {
     "System": {
       "events": ["Remarked"],
-      "calls": ["remark_with_event"],
+      "calls": ["remark", "remark_with_event"],
       "storage": [],
       "constants": []
     }

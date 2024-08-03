@@ -1,24 +1,16 @@
 type CID @entity {
-  "Account address"
-  id: ID!
-  cid: String! @index
-  data: String!
-  timestamp: DateTime! @index
-  nextCid: String @index
-}
-
-type Chunk @entity {
   id: ID!
   cid: String! @index
   data: String!
   nextCid: String
 }
 
-type RewardEvent @entity {
+type Remark @entity {
   id: ID!
   blockNumber: Int! @index
+  hash: String! @index
+  remark: String!
   timestamp: DateTime! @index
   extrinsicHash: String! @index
   sender: String! @index
-  hash: String! @index
 }

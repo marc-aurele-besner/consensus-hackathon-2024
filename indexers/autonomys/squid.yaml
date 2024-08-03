@@ -11,7 +11,8 @@ deploy:
       - sqd
       - process:prod
     env:
-      RPC_ENDPOINT: ${{ secrets.RPC_ENDPOINT }}
+      AUTONOMYS_GATEWAY: ${{ secrets.AUTONOMYS_GATEWAY }}
+      RPC_AUTONOMYS_ENDPOINT: ${{ secrets.RPC_AUTONOMYS_ENDPOINT }}
   api:
     cmd:
       - sqd
