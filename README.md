@@ -22,6 +22,7 @@ This project consists of two main components:
     - [SubSquid Indexer](#subsquid-indexer-1)
   - [Project Structure](#project-structure)
   - [License](#license)
+  - [Repository](#repository)
 
 ## Prerequisites
 
@@ -116,3 +117,7 @@ This project consists of two main components:
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+## Repository
+
+The source code for this project is available at [https://github.com/FileOnchain/fileonchain-web](https://github.com/FileOnchain/fileonchain-web).

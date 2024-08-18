@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="flex justify-center items-center bg-gray-900 text-white py-4 w-full fixed bottom-0">
       <a
-        href="https://github.com/marc-aurele-besner/consensus-hackathon-2024"
+        href="https://github.com/FileOnchain/fileonchain-web"
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center gap-2 mr-8"
